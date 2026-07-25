@@ -3,13 +3,13 @@
 // Use of this software is subject to the terms and conditions of the Synty Studios End User Licence Agreement (EULA)
 // available at: https://syntystore.com/pages/end-user-licence-agreement
 //
-// Sample scripts are included only as examples and are not intended as production-ready.
+// Adapted from the Synty sample scripts for this project.
 
 using UnityEngine;
 
-namespace Synty.AnimationBaseLocomotion.Samples
+namespace Dungeon
 {
-    public class SampleObjectLockOn : MonoBehaviour
+    public class ObjectLockOn : MonoBehaviour
     {
         public Material _highlightMat;
         public Material _targetMat;
@@ -35,12 +35,12 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// <param name="otherCollider">The collider to check.</param>
         private void OnTriggerEnter(Collider otherCollider)
         {
-            SamplePlayerAnimationController playerAnimationController = otherCollider.GetComponent<SamplePlayerAnimationController>();
+            LockOnController lockOnController = otherCollider.GetComponent<LockOnController>();
 
-            // Only interested in player collisions if they have the controller script.
-            if (playerAnimationController != null)
+            // Only interested in player collisions if they have the lock-on controller script.
+            if (lockOnController != null)
             {
-                playerAnimationController.AddTargetCandidate(gameObject);
+                lockOnController.AddTargetCandidate(gameObject);
             }
         }
 
@@ -50,12 +50,12 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// <param name="otherCollider">The collider to check.</param>
         private void OnTriggerExit(Collider otherCollider)
         {
-            SamplePlayerAnimationController playerAnimationController = otherCollider.GetComponent<SamplePlayerAnimationController>();
+            LockOnController lockOnController = otherCollider.GetComponent<LockOnController>();
 
-            // Only interested in player collisions if they have the controller script.
-            if (playerAnimationController != null)
+            // Only interested in player collisions if they have the lock-on controller script.
+            if (lockOnController != null)
             {
-                playerAnimationController.RemoveTarget(gameObject);
+                lockOnController.RemoveTarget(gameObject);
                 Highlight(false, false);
             }
         }

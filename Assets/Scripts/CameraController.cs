@@ -3,14 +3,14 @@
 // Use of this software is subject to the terms and conditions of the Synty Studios End User Licence Agreement (EULA)
 // available at: https://syntystore.com/pages/end-user-licence-agreement
 //
-// Sample scripts are included only as examples and are not intended as production-ready.
+// Adapted from the Synty sample scripts for this project.
 
-using Synty.AnimationBaseLocomotion.Samples.InputSystem;
+using Dungeon.InputSystem;
 using UnityEngine;
 
-namespace Synty.AnimationBaseLocomotion.Samples
+namespace Dungeon
 {
-    public class SampleCameraController : MonoBehaviour
+    public class CameraController : MonoBehaviour
     {
         private const int _LAG_DELTA_TIME_ADJUSTMENT = 20;
 

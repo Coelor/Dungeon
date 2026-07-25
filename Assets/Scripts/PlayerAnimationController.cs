@@ -3,15 +3,14 @@
 // Use of this software is subject to the terms and conditions of the Synty Studios End User Licence Agreement (EULA)
 // available at: https://syntystore.com/pages/end-user-licence-agreement
 //
-// Sample scripts are included only as examples and are not intended as production-ready.
+// Adapted from the Synty sample scripts for this project.
 
-using Synty.AnimationBaseLocomotion.Samples.InputSystem;
-using System.Collections.Generic;
+using Dungeon.InputSystem;
 using UnityEngine;
 
-namespace Synty.AnimationBaseLocomotion.Samples
+namespace Dungeon
 {
-    public class SamplePlayerAnimationController : MonoBehaviour
+    public class PlayerAnimationController : MonoBehaviour
     {
         #region Enum
 
@@ -84,7 +83,7 @@ namespace Synty.AnimationBaseLocomotion.Samples
         [Header("External Components")]
         [Tooltip("Script controlling camera behavior")]
         [SerializeField]
-        private SampleCameraController _cameraController;
+        private CameraController _cameraController;
         [Tooltip("InputReader handles player input")]
         [SerializeField]
         private InputReader _inputReader;
@@ -94,6 +93,9 @@ namespace Synty.AnimationBaseLocomotion.Samples
         [Tooltip("Character Controller component for controlling player movement")]
         [SerializeField]
         private CharacterController _controller;
+        [Tooltip("Optional lock-on targeting component; drives strafe state when locking on")]
+        [SerializeField]
+        private LockOnController _lockOnController;
 
         #endregion
 
@@ -279,14 +281,12 @@ namespace Synty.AnimationBaseLocomotion.Samples
 
         #region Runtime Properties
 
-        private readonly List<GameObject> _currentTargetCandidates = new List<GameObject>();
         private AnimationState _currentState = AnimationState.Base;
         private bool _cannotStandUp;
         private bool _crouchKeyPressed;
         private bool _isAiming;
         private bool _isCrouching;
         private bool _isGrounded = true;
-        private bool _isLockedOn;
         private bool _isSliding;
         private bool _isSprinting;
         private bool _isStarting;
@@ -306,9 +306,7 @@ namespace Synty.AnimationBaseLocomotion.Samples
         private float _strafeAngle;
         private float _strafeDirectionX;
         private float _strafeDirectionZ;
-        private GameObject _currentLockOnTarget;
         private GaitState _currentGait;
-        private Transform _targetLockOnPos;
         private Vector3 _currentRotation = new Vector3(0f, 0f, 0f);
         private Vector3 _moveDirection;
         private Vector3 _previousRotation;
@@ -337,9 +335,11 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// <inheritdoc cref="Start" />
         private void Start()
         {
-            _targetLockOnPos = transform.Find("TargetLockOnPos");
+            if (_lockOnController != null)
+            {
+                _lockOnController.LockedOnChanged += OnLockedOnChanged;
+            }
 
-            _inputReader.onLockOnToggled += ToggleLockOn;
             _inputReader.onWalkToggled += ToggleWalk;
             _inputReader.onSprintActivated += ActivateSprint;
             _inputReader.onSprintDeactivated += DeactivateSprint;
@@ -373,58 +373,21 @@ namespace Synty.AnimationBaseLocomotion.Samples
         private void DeactivateAim()
         {
             _isAiming = false;
-            _isStrafing = !_isSprinting && (_alwaysStrafe || _isLockedOn);
+            _isStrafing = !_isSprinting && (_alwaysStrafe || IsLockedOn);
         }
 
         /// <summary>
-        ///     Adds an object to the list of target candidates.
+        ///     Whether the player is currently locked on to a target.
         /// </summary>
-        /// <param name="newTarget">The object to add.</param>
-        public void AddTargetCandidate(GameObject newTarget)
-        {
-            if (newTarget != null)
-            {
-                _currentTargetCandidates.Add(newTarget);
-            }
-        }
+        private bool IsLockedOn => _lockOnController != null && _lockOnController.IsLockedOn;
 
         /// <summary>
-        ///     Removes an object to the list of target candidates if present.
+        ///     Updates the strafe state when the lock-on state changes.
         /// </summary>
-        /// <param name="targetToRemove">The object to remove if present.</param>
-        public void RemoveTarget(GameObject targetToRemove)
+        /// <param name="isLockedOn">The new lock-on state.</param>
+        private void OnLockedOnChanged(bool isLockedOn)
         {
-            if (_currentTargetCandidates.Contains(targetToRemove))
-            {
-                _currentTargetCandidates.Remove(targetToRemove);
-            }
-        }
-
-        /// <summary>
-        ///     Toggle the lock-on state.
-        /// </summary>
-        private void ToggleLockOn()
-        {
-            EnableLockOn(!_isLockedOn);
-        }
-
-        /// <summary>
-        ///     Sets the lock-on state to the given state.
-        /// </summary>
-        /// <param name="enable">The state to set lock-on to.</param>
-        private void EnableLockOn(bool enable)
-        {
-            _isLockedOn = enable;
-            _isStrafing = false;
-
-            _isStrafing = enable ? !_isSprinting : _alwaysStrafe || _isAiming;
-
-            _cameraController.LockOn(enable, _targetLockOnPos);
-
-            if (enable && _currentLockOnTarget != null)
-            {
-                _currentLockOnTarget.GetComponent<SampleObjectLockOn>().Highlight(true, true);
-            }
+            _isStrafing = isLockedOn ? !_isSprinting : _alwaysStrafe || _isAiming;
         }
 
         #endregion
@@ -472,7 +435,7 @@ namespace Synty.AnimationBaseLocomotion.Samples
         {
             _isSprinting = false;
 
-            if (_alwaysStrafe || _isAiming || _isLockedOn)
+            if (_alwaysStrafe || _isAiming || IsLockedOn)
             {
                 _isStrafing = true;
             }
@@ -738,14 +701,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
         private void Move()
         {
             _controller.Move(_velocity * Time.deltaTime);
-
-            if (_isLockedOn)
-            {
-                if (_currentLockOnTarget != null)
-                {
-                    _targetLockOnPos.position = _currentLockOnTarget.transform.position;
-                }
-            }
         }
 
         /// <summary>
@@ -1249,74 +1204,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
 
         #endregion
 
-        #region Lock-on System
-
-        /// <summary>
-        ///     Updates and sets the best target for lock on from the list of available targets.
-        /// </summary>
-        private void UpdateBestTarget()
-        {
-            GameObject newBestTarget;
-
-            if (_currentTargetCandidates.Count == 0)
-            {
-                newBestTarget = null;
-            }
-            else if (_currentTargetCandidates.Count == 1)
-            {
-                newBestTarget = _currentTargetCandidates[0];
-            }
-            else
-            {
-                newBestTarget = null;
-                float bestTargetScore = 0f;
-
-                foreach (GameObject target in _currentTargetCandidates)
-                {
-                    target.GetComponent<SampleObjectLockOn>().Highlight(false, false);
-
-                    float distance = Vector3.Distance(transform.position, target.transform.position);
-                    float distanceScore = 1 / distance * 100;
-
-                    Vector3 targetDirection = target.transform.position - _cameraController.GetCameraPosition();
-                    float angleInView = Vector3.Dot(targetDirection.normalized, _cameraController.GetCameraForward());
-                    float angleScore = angleInView * 40;
-
-                    float totalScore = distanceScore + angleScore;
-
-                    if (totalScore > bestTargetScore)
-                    {
-                        bestTargetScore = totalScore;
-                        newBestTarget = target;
-                    }
-                }
-            }
-
-            if (!_isLockedOn)
-            {
-                _currentLockOnTarget = newBestTarget;
-
-                if (_currentLockOnTarget != null)
-                {
-                    _currentLockOnTarget.GetComponent<SampleObjectLockOn>().Highlight(true, false);
-                }
-            }
-            else
-            {
-                if (_currentTargetCandidates.Contains(_currentLockOnTarget))
-                {
-                    _currentLockOnTarget.GetComponent<SampleObjectLockOn>().Highlight(true, true);
-                }
-                else
-                {
-                    _currentLockOnTarget = newBestTarget;
-                    EnableLockOn(false);
-                }
-            }
-        }
-
-        #endregion
-
         #endregion
 
         #region Locomotion State
@@ -1334,7 +1221,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// </summary>
         private void UpdateLocomotionState()
         {
-            UpdateBestTarget();
             GroundedCheck();
 
             if (!_isGrounded)
@@ -1396,7 +1282,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// </summary>
         private void UpdateJumpState()
         {
-            UpdateBestTarget();
             ApplyGravity();
 
             if (_velocity.y <= 0f)
@@ -1443,7 +1328,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// </summary>
         private void UpdateFallState()
         {
-            UpdateBestTarget();
             GroundedCheck();
 
             CalculateRotationalAdditives(false, _enableHeadTurn, _enableBodyTurn);
@@ -1480,8 +1364,6 @@ namespace Synty.AnimationBaseLocomotion.Samples
         /// </summary>
         private void UpdateCrouchState()
         {
-            UpdateBestTarget();
-
             GroundedCheck();
             if (!_isGrounded)
             {

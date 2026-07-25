@@ -3,14 +3,14 @@
 // Use of this software is subject to the terms and conditions of the Synty Studios End User Licence Agreement (EULA)
 // available at: https://syntystore.com/pages/end-user-licence-agreement
 //
-// Sample scripts are included only as examples and are not intended as production-ready.
+// Adapted from the Synty sample scripts for this project.
 
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-namespace Synty.AnimationBaseLocomotion.Samples.InputSystem
+namespace Dungeon.InputSystem
 {
     public class InputReader : MonoBehaviour, Controls.IPlayerActions
     {
