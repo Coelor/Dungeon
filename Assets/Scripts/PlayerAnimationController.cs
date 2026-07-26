@@ -295,6 +295,7 @@ namespace Dungeon
         private bool _isTurningInPlace;
         private bool _isWalking;
         private bool _movementInputHeld;
+        private bool _movementLocked;
         private bool _movementInputPressed;
         private bool _movementInputTapped;
         private float _currentMaxSpeed;
@@ -345,8 +346,8 @@ namespace Dungeon
             _inputReader.onSprintDeactivated += DeactivateSprint;
             _inputReader.onCrouchActivated += ActivateCrouch;
             _inputReader.onCrouchDeactivated += DeactivateCrouch;
-            _inputReader.onAimActivated += ActivateAim;
-            _inputReader.onAimDeactivated += DeactivateAim;
+            _inputReader.onBlockActivated += ActivateAim;
+            _inputReader.onBlockDeactivated += DeactivateAim;
 
             _isStrafing = _alwaysStrafe;
 
@@ -358,7 +359,16 @@ namespace Dungeon
         #region Aim and Lock-on
 
         /// <summary>
-        ///     Activates the aim action of the player.
+        ///     Locks or unlocks player movement input, e.g. while a combat action is playing.
+        /// </summary>
+        /// <param name="locked">Whether movement input is ignored.</param>
+        public void SetMovementLock(bool locked)
+        {
+            _movementLocked = locked;
+        }
+
+        /// <summary>
+        ///     Activates the aim stance of the player (strafing); also used while blocking.
         /// </summary>
         private void ActivateAim()
         {
@@ -720,6 +730,11 @@ namespace Dungeon
         private void CalculateMoveDirection()
         {
             CalculateInput();
+
+            if (_movementLocked)
+            {
+                _moveDirection = Vector3.zero;
+            }
 
             if (!_isGrounded)
             {

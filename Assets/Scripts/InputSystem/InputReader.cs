@@ -8,11 +8,10 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Dungeon.InputSystem
 {
-    public class InputReader : MonoBehaviour, Controls.IPlayerActions
+    public class InputReader : MonoBehaviour, DungeonControls.IPlayerActions
     {
         public Vector2 _mouseDelta;
         public Vector2 _moveComposite;
@@ -20,10 +19,10 @@ namespace Dungeon.InputSystem
         public float _movementInputDuration;
         public bool _movementInputDetected;
 
-        private Controls _controls;
+        private DungeonControls _controls;
 
-        public Action onAimActivated;
-        public Action onAimDeactivated;
+        public Action onBlockActivated;
+        public Action onBlockDeactivated;
 
         public Action onCrouchActivated;
         public Action onCrouchDeactivated;
@@ -37,12 +36,19 @@ namespace Dungeon.InputSystem
 
         public Action onWalkToggled;
 
+        public Action onAttackPressed;
+        public Action onAttackReleased;
+
+        public Action onDodgePerformed;
+
+        public Action onSheatheToggled;
+
         /// <inheritdoc cref="OnEnable" />
         private void OnEnable()
         {
             if (_controls == null)
             {
-                _controls = new Controls();
+                _controls = new DungeonControls();
                 _controls.Player.SetCallbacks(this);
             }
 
@@ -135,20 +141,64 @@ namespace Dungeon.InputSystem
         }
 
         /// <summary>
-        ///     Defines the action to perform when the OnAim callback is called.
+        ///     Defines the action to perform when the OnBlock callback is called.
         /// </summary>
         /// <param name="context">The context of the callback.</param>
-        public void OnAim(InputAction.CallbackContext context)
+        public void OnBlock(InputAction.CallbackContext context)
         {
             if (context.started)
             {
-                onAimActivated?.Invoke();
+                onBlockActivated?.Invoke();
             }
 
             if (context.canceled)
             {
-                onAimDeactivated?.Invoke();
+                onBlockDeactivated?.Invoke();
             }
+        }
+
+        /// <summary>
+        ///     Defines the action to perform when the OnAttack callback is called.
+        /// </summary>
+        /// <param name="context">The context of the callback.</param>
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            if (context.started)
+            {
+                onAttackPressed?.Invoke();
+            }
+            else if (context.canceled)
+            {
+                onAttackReleased?.Invoke();
+            }
+        }
+
+        /// <summary>
+        ///     Defines the action to perform when the OnDodge callback is called.
+        /// </summary>
+        /// <param name="context">The context of the callback.</param>
+        public void OnDodge(InputAction.CallbackContext context)
+        {
+            if (!context.performed)
+            {
+                return;
+            }
+
+            onDodgePerformed?.Invoke();
+        }
+
+        /// <summary>
+        ///     Defines the action to perform when the OnToggleSheathe callback is called.
+        /// </summary>
+        /// <param name="context">The context of the callback.</param>
+        public void OnToggleSheathe(InputAction.CallbackContext context)
+        {
+            if (!context.performed)
+            {
+                return;
+            }
+
+            onSheatheToggled?.Invoke();
         }
 
         /// <summary>
