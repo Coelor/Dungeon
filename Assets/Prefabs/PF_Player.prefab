@@ -531,14 +531,21 @@ Animator:
   m_GameObject: {fileID: 1674254391527931729}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: bfa42ba6d484e4e448024c9acf736ce9, type: 3}
-  m_Controller: {fileID: 9100000, guid: a3a348fc313b53a44ab5b8f348e2a5eb, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5b78433bc9e0d3b4e8d4056fda7b95b4, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'Jaw'\n\tFrom animation clip 'A_Attack_LightCombo01A_Sword'\n\tFrom
+    animation clip 'A_Attack_LightCombo01B_Hit_Sword'\n\tFrom animation clip 'A_Attack_LightCombo01C_Sword'\n\tFrom
+    animation clip 'A_Attack_HeavyCombo01A_Sword'\n\tFrom animation clip 'A_Attack_HeavyCombo01B_Hit_Sword'\n\tFrom
+    animation clip 'A_Attack_HeavyCombo01C_Sword'\n\tFrom animation clip 'A_DodgeRoll_F_RootMotion_Sword'\n\tFrom
+    animation clip 'A_DodgeRoll_B_RootMotion_Sword'\n\tFrom animation clip 'A_DodgeRoll_L_RootMotion_Sword'\n\tFrom
+    animation clip 'A_DodgeRoll_R_RootMotion_Sword'\n\tand more ..."
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -1263,7 +1270,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3404607803439509937}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.05057772, y: 0.0025546495, z: 0.054213107, w: 0.99724436}
+  m_LocalRotation: {x: -0.050577722, y: 0.0025546495, z: 0.05421311, w: 0.99724436}
   m_LocalPosition: {x: -0.0007850012, y: 0.037903752, z: 2.5401902e-15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

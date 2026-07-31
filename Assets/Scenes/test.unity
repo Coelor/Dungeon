@@ -437,6 +437,69 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7085234261289341634, guid: 57aa70f76bbc9b2449b73a761ecbb286, type: 3}
+--- !u!1 &383586488 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1674254391527931729, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+  m_PrefabInstance: {fileID: 7388428538896472261}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &383586489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383586488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cfc744277034747b1b9d5813a6b7807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dungeon.CombatController
+  _animator: {fileID: 383586494}
+  _inputReader: {fileID: 383586492}
+  _controller: {fileID: 383586493}
+  _playerAnimationController: {fileID: 383586491}
+  _heavyHoldThreshold: 0.35
+  _comboQueueOpenPoint: 0.2
+  _comboChainPoint: 0.6
+  _crossFadeDuration: 0.1
+  _startsDrawn: 1
+  _sword: {fileID: 0}
+  _handSocket: {fileID: 0}
+  _backSocket: {fileID: 0}
+  _armLayerWeight: 0.7
+  _layerWeightFadeSpeed: 10
+--- !u!114 &383586491 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3475627456435712753, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+  m_PrefabInstance: {fileID: 7388428538896472261}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383586488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f09cb4c2eaae4daab990c8a776eb3f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dungeon.PlayerAnimationController
+--- !u!114 &383586492 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4944668334253156831, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+  m_PrefabInstance: {fileID: 7388428538896472261}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383586488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc29bbba06f14b66ae8af4debe5e7274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dungeon.InputSystem.InputReader
+--- !u!143 &383586493 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 4345107789694268937, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+  m_PrefabInstance: {fileID: 7388428538896472261}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &383586494 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7500997423646629199, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+  m_PrefabInstance: {fileID: 7388428538896472261}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &385866534
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3522,10 +3585,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7500997423646629199, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 5b78433bc9e0d3b4e8d4056fda7b95b4, type: 2}
+    - target: {fileID: 7500997423646629199, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'Jaw'\n\tFrom animation clip 'A_Attack_LightCombo01A_Sword'\n\tFrom
+        animation clip 'A_Attack_LightCombo01B_Hit_Sword'\n\tFrom animation clip
+        'A_Attack_LightCombo01C_Sword'\n\tFrom animation clip 'A_Attack_HeavyCombo01A_Sword'\n\tFrom
+        animation clip 'A_Attack_HeavyCombo01B_Hit_Sword'\n\tFrom animation clip
+        'A_Attack_HeavyCombo01C_Sword'\n\tFrom animation clip 'A_DodgeRoll_F_RootMotion_Sword'\n\tFrom
+        animation clip 'A_DodgeRoll_B_RootMotion_Sword'\n\tFrom animation clip 'A_DodgeRoll_L_RootMotion_Sword'\n\tFrom
+        animation clip 'A_DodgeRoll_R_RootMotion_Sword'\n\tand more ..."
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1674254391527931729, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 383586489}
     - targetCorrespondingSourceObject: {fileID: 7608724455742496866, guid: 4cc5cf69a46aa914386585aa0dc19a35, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8205969290832607009}
